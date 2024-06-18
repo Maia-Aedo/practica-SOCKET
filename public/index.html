@@ -1,15 +1,23 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sockets</title>
-    <link rel="stylesheet" href="/public/style.css">
+    <title>aplicacion con sockets</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="main.js"></script>
 </head>
 <body>
-    <h1>TUTORIAL DE SOCKETS.IO</h1>
-    <div class="messages"></div>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="index.js"></script>
+    <h1>app chat</h1>
+    <div id="messages"></div>
+    <!-- FORMULARIO PARA ENVIAR MENSAJES -->
+     <form onsubmit="return addMessage(this)">
+        <!-- form sin action para que no se recargue la pagina, por eso usa evento addMessage
+         de la aplicacion cliente -->
+        <!-- nombre de autor -->
+        <input type="text" id="username" placeholder="tu nombre">
+        <input type="text" id="texto" placeholder="cuentaanos algo...">
+        <input type="submit" value="enviar">
+     </form>
 </body>
 </html>

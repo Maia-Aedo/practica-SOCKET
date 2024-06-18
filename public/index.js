@@ -1,26 +1,36 @@
-// inicializamos una constante
-let socket = io.connect() // ya podemos empazar a usar los sockets desde el cliente
+// PARTE CLIENTE
+// conectamos el cliente con el servidor y escuchamos evento messages
+let socket = io.connect();
 
 // recibimos el mensaje
 // socket.on('notificacion', data => {
 //     console.log(data)
 // })
 
-// data tiene el array de mensajes que envia el servidor 
-socket.on('messages', function(data){
-    console.log(data)
-})
-
-// creamos funcion que se encargara de pintar en el html los mensajes
-// esta funcion itera sobre los datos que llegan a traves del socket con funcion map de js
-// para cada elemento pinta una plantilla html con el nombre del autor y texto del msj de cada elto
-function render(data){
-    // index
-    var html = data.map(function(elem){
-        return(`<div>
-                <strong>${elem.author}</strong>:
-                <em>${elem.text}</em></div>`)
-    }).join("");
-    element.getElementById('messages').innerHTML = html;
+// function para mostrar en html los mensajes
+// data contiene array de mensajes que envia el servidor
+function render(data) {
+    // map itera sobre cada objeto del arreglo y ejecuta la funcion en ellos
+    var html = data.map(function(elem) {
+        return (`<div>
+                    <strong>${elem.author}</strong>:
+                    <em>${elem.text}</em>
+                </div>`)
+    // join lo que hace es separar los elementos del array por un espacio
+    }).join (" ");
+    // se inserta el template en el div de html
+    document.getElementById('messages').innerHTML = html;
 }
-socket.on('messages', function(data){ render(data); });
+socket.on('messages', function(data) { render(data); });
+
+// definimos funcion addMessage llamada en form
+function addMessage(e) {
+    var mensaje = {
+        // recog valor de los inputs
+        author: document.getElementById('username').value,
+        text: document.getElementById('texto').value
+    };
+    // los envia por el socket pata que lo escuche el servidor
+    socket.emit('new-message', mensaje);
+    return false;
+}

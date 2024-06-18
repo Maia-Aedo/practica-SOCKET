@@ -1,14 +1,13 @@
 // importaciones
+// creamos aplicacion con express que pasaremos a servidor http
 const express = require('express');
-// inicializamos express
 const app = express();
-// importamos http para que los sockets funcionen
-// http recibe la constante de express
-const http = require('http').Server(app);
-// io recibe la constante de http
-const io = require('socket.io')(http);
-// la aplicacion que creemos con express, la pasamos a servidor http
 const server = require('http').Server(app);
+// servidor de websocket
+const io = require('socket.io') (server);
+// indicamos ruta donde estaran los ficheros estaticos usando middleware | public tiene index y main
+app.use(express.static('public'));
+
 
 // arreglo con los mensajes que queremos mostrar
 let messages = [
@@ -17,18 +16,28 @@ let messages = [
     { author: "ana", text: "genial" }
 ]
 
-// el servidor websocket debe estar atento a que se realice la conexion
-io.on('connection', function (socket) {
+// el servidor de websocket este atento a que se realice una conexion
+// pasamos mensaje connection
+io.on('connection', function(socket){
     console.log('un cliente se ha conectado');
+    // enviamos el array de objetos con el evento messages
     socket.emit('messages', messages)
+
+    // socket escucha evento new y cuando llegue trae los datos en data
+    socket.on('new-message', function(data){
+        // añadimos el nuevo msj que llega en data al array messages con push
+        messages.push(data);
+        /* usando sokcet.emit creamos una comunicacion 1:1 pero una sala de chat es privada
+        por lo que se debe notificar a todos los clientes conectados usando io.sockets.emit*/
+        io.sockets.emit('messages', messages)
+    })
 })
 
 /* hay que configurar el middleware para dejar disponibles las rutas y archivos estáticos.
-de esta manera el archivo indes.html va a mostrar cuando ingresemos a la página
+de esta manera el archivo index.html va a mostrar cuando ingresemos a la página
 EL SERVIDOR SE ARRANCA CON HTTP.LISTEN() */
 
-// indicamos que queremos cargar los archivos estáticos
-app.use(express.static('./public'));
+
 // esta ruta va a cargar el index.html en la raiz
 app.get('/', (req, res) => {
     res.sendFile('index.html', { root: __dirname })
